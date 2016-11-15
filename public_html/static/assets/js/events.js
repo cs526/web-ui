@@ -397,7 +397,7 @@ $("#MapleRouteManagement").click(function (event) {
     url: "http://caltech.maple:8181/restconf/config/maple-tracetree:tracetree",
     headers: {
       "Authorization": "Basic YWRtaW46YWRtaW4=",
-      "Access-Control-Allow-Headers": "*"
+      // "Access-Control-Allow-Headers": "*"
     },
     statusCode: {
       401: function() {
@@ -407,7 +407,7 @@ $("#MapleRouteManagement").click(function (event) {
     success: function (data) {
       var yangTT = data['tracetree'];
       paths = [];
-      yangTT.ttnode.forEach( functoin ( n ) {
+      yangTT.ttnode.forEach( function ( n ) {
         if (n.type == "L") {
           if (n['maple-l-type:action-type'] == "Path") {
             if (n["maple-l-type:path-tt"] && n["maple-l-type:path-tt"].length) {
@@ -423,8 +423,8 @@ $("#MapleRouteManagement").click(function (event) {
             }
           }
         }
-      })
-      alto_path_manager(data['paths']);
+      });
+      alto_path_manager(paths);
     },
     dataType: "json"
   });
