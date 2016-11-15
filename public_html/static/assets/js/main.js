@@ -87,12 +87,12 @@ function alto_path_manager(paths) {
 
     $("#route-management-table tbody tr").hover(function () {
       var route = $(this).find('td:first a').data('route').split(',');
-      route.slice(0, -1).forEach(function (e) {
+      route.forEach(function (e) {
         var source = e.replace(/:/g, '\\\:').replace(/\./g, '\\\.');
         d3.selectAll('.link-' + source).attr("style", "stroke: #FFF; stroke-width: 8px;");
       });}, function () {
         var route = $(this).find('td:first a').data('route').split(',');
-        route.slice(0, -1).forEach(function (e) {
+        route.forEach(function (e) {
           var source = e.replace(/:/g, '\\\:').replace(/\./g, '\\\.');
           d3.selectAll('.link-' + source).attr("style", "");
         });
