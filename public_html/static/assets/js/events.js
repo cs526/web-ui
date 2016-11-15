@@ -390,13 +390,14 @@ $('#L3RouteCalculationModal, #ALTORouteCalculationModal').on('show.bs.modal', fu
 
 });
 
-$("#L2L3RouteManagement").click(function (event) {
+$("#MapleRouteManagement").click(function (event) {
   $.ajax({
     type: "GET",
     contentType: "application/json; charset=utf-8",
-    url: "api/route/list",
+    url: "http://caltech.maple:8181/restconf/config/maple-tracetree:tracetree",
     headers: {
-      "Authorization": "Basic " + (Cookies.get('auth') || "")
+      "Authorization": "Basic YWRtaW46YWRtaW4=",
+      "Access-Control-Allow-Headers": "*"
     },
     statusCode: {
       401: function() {
@@ -404,6 +405,25 @@ $("#L2L3RouteManagement").click(function (event) {
       }
     },
     success: function (data) {
+      var yangTT = data['tracetree'];
+      paths = [];
+      yangTT.ttnode.forEach( functoin ( n ) {
+        if (n.type == "L") {
+          if (n['maple-l-type:action-type'] == "Path") {
+            if (n["maple-l-type:path-tt"] && n["maple-l-type:path-tt"].length) {
+              path = {id: n.id + 'L' + n["maple-l-type:path-tt"]["path-id"], path: []};
+              n["maple-l-type:path-tt"].forEach( function( p ) {
+                if (p["link-tt"] && p["link-tt"].length) {
+                  p["link-tt"].forEach( function( l ) {
+                    path.path.push(l["src-node"].port);
+                  });
+                }
+              });
+              paths.push(path);
+            }
+          }
+        }
+      })
       alto_path_manager(data['paths']);
     },
     dataType: "json"
