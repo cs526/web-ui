@@ -32,7 +32,7 @@ RUN pip install -r /requirements.txt
 RUN git clone https://github.com/snlab/python-odl.git && cd python-odl && python setup.py install
 
 # Install rrd watchdog
-RUN git clone https://github.com/kytos/stats-watchdog
+RUN git clone https://github.com/cmscaltech/stats-watchdog
 RUN sed -i 's/steps = 60//' /stats-watchdog/scripts/ofng-watchdog \
     && cd stats-watchdog \
     && pip install -r requirements.txt \
