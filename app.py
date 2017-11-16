@@ -48,25 +48,33 @@ def get_ports_on_path(path):
     ports = filter(lambda x: re.match(regex, x), path)
     return zip(ports[::2], ports[1::2])
 
+def get_port_rrd_stats(node_id, port_id, diff=60 * 15):
+    filename = str("%s/%s/%s.rrd" % (rrd_dir,
+                                     node_id,
+                                     port_id))
+    return get_basic_rrd_stats(filename, diff)
+
 def get_rrd_stats(node_id, table_id, clean_flow_id, diff=60 * 15):
     filename = str("%s/%s/%s/%s.rrd" % (rrd_dir,
                                         node_id,
                                         table_id,
                                         clean_flow_id))
+    return get_basic_rrd_stats(filename, diff)
 
+def get_basic_rrd_stats(filename, diff=60 * 15):
     end = int(time.time())
     begin = end - diff
 
     data = []
     if os.path.isfile(filename):
         result = rrdtool.fetch(filename, 'AVERAGE', '--start', str(begin), '--end', str(end), '-r', str(30))
-        keys = result[1]
+        # keys = result[1]
         values = result[2]
         begin = result[0][0]
         end = result[0][1]
         step = result[0][2]
         ts = begin
-        duration = end - begin
+        # duration = end - begin
         for value in values:
             date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
             data.append({'date': date,
@@ -360,16 +368,23 @@ def all_stats():
     nodes = odl.get_nodes()
     all_stats = {}
     for node in nodes.values():
-        tables = node.get_tables()
-        for table in tables.values():
-            for flow in table.get_all_flows().values():
-                for action in flow.get_actions():
-                    if action['type'] == 'output-action':
-                        connector = node.id + ":" + action['value']
-                        stat = get_rrd_stats(node.id, table.id, flow.clean_id, 120)
-                        rates = map(lambda x: x['bytes'], stat)
-                        rate = sum(rates) / len(rates) if rates else 0
-                        all_stats[connector] = all_stats.get(connector, 0) + rate
+        ports = node.get_connectors()
+        for port in ports.values():
+            connector = port.id
+            stat = get_port_rrd_stats(node.id, port.id, 120)
+            rates = map(lambda x: x['bytes'], stat)
+            rate = sum(rates) / len(rates) if rates else 0
+            all_stats[connector] = rate
+        # tables = node.get_tables()
+        # for table in tables.values():
+        #     for flow in table.get_all_flows().values():
+        #         for action in flow.get_actions():
+        #             if action['type'] == 'output-action':
+        #                 connector = node.id + ":" + action['value']
+        #                 stat = get_rrd_stats(node.id, table.id, flow.clean_id, 120)
+        #                 rates = map(lambda x: x['bytes'], stat)
+        #                 rate = sum(rates) / len(rates) if rates else 0
+        #                 all_stats[connector] = all_stats.get(connector, 0) + rate
     return flask.jsonify(all_stats)
 
 

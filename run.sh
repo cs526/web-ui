@@ -10,4 +10,4 @@ docker run \
        -v $(pwd)/secret:/var/www/ofng/web-ui/secret \
        -v $(pwd)/rrd.docker:/var/log/rrd/ofng \
        -p 8888:80 \
-       ofng
+       fno2010/ofng
