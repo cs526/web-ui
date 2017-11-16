@@ -892,6 +892,9 @@ var D3Force = function(nodes, links, div) {
       else if (d['manufacturer'] && d['manufacturer'].match(/pic/gi)) {
         return "pic-circle";
       }
+      else if (d['manufacturer'] && d['manufacturer'].match(/aris/gi)) {
+        return "arista-circle";
+      }
       else if (d['manufacturer'] && d['manufacturer'].match(/juniper/gi)) {
         return "juniper-circle";
       }

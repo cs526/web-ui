@@ -1029,6 +1029,11 @@ $('#FlowAddModal').on('show.bs.modal', function (event) {
   controller.value = "CONTROLLER";
   output.appendChild(controller);
 
+  var normal = document.createElement("option");
+  normal.textContent = "NORMAL";
+  normal.value = "NORMAL";
+  output.appendChild(normal);
+
   modal.find("#FlowAddForm").attr("action", endpoint);
   modal.find("#node_id").attr("value", node_id);
 
